@@ -1,4 +1,4 @@
-ScriptAPI.register('FarmGod', true, 'Warre', 'nl.tribalwars@coma.innogames.de');
+// ScriptAPI.register('FarmGod', true, 'Warre', 'nl.tribalwars@coma.innogames.de');
 
 const mobileCheck = window.mobile;
 const version = 2.1;
