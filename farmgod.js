@@ -1,4 +1,4 @@
-// ScriptAPI.register('FarmGod', true, 'Warre', 'nl.tribalwars@coma.innogames.de');
+ScriptAPI.register('FarmGod', true, 'Warre', 'nl.tribalwars@coma.innogames.de');
 
 const mobileCheck = window.mobile;
 const version = 2.1;
@@ -298,44 +298,31 @@ window.FarmGod.Library = (function () {
         return new Date(year, (month - 1), day, hour, min, sec).getTime();
     };
 
-    const timestampFromString = function(timestr) {
-      // serverDate = “dd/MM/yyyy”
-      const [dd, MM, yyyy] = $('#serverDate').text().split('/').map(x => +x);
-    
-      // Italian phrases
-      const todayRe     = new RegExp('oggi alle ([\\d:]+)');
-      const tomorrowRe  = new RegExp('domani alle ([\\d:]+)');
-      const yesterdayRe = new RegExp('ieri alle ([\\d:]+)');
-      // e.g. “25.03.2025 alle 12:34:56” or “25.03.2025 alle 12:34”
-      const laterRe     = new RegExp('([\\d.]+) alle ([\\d:]+)');
-    
-      let m, parts, dt;
-    
-      if (m = todayRe.exec(timestr)) {
-        parts = m[1].split(':').map(Number);
-        dt = new Date(yyyy, MM-1, dd, ...parts);
-      }
-      else if (m = tomorrowRe.exec(timestr)) {
-        parts = m[1].split(':').map(Number);
-        dt = new Date(yyyy, MM-1, dd+1, ...parts);
-      }
-      else if (m = yesterdayRe.exec(timestr)) {
-        parts = m[1].split(':').map(Number);
-        dt = new Date(yyyy, MM-1, dd-1, ...parts);
-      }
-      else if (m = laterRe.exec(timestr)) {
-        const [day, month, year] = m[1].split('.').map(Number);
-        parts = m[2].split(':').map(Number);
-        dt = new Date(year, month-1, day, ...parts);
-      }
-      else {
-        console.error(`timestampFromString: formato non riconosciuto: "${timestr}"`);
-        return null;
-      }
-    
-      return dt.getTime();
+    const timestampFromString = function (timestr) {
+        let d = $('#serverDate').text().split('/').map(x => +x);
+        let todayPattern = new RegExp("oggi alle %s".replace('%s', '([\\d+|:]+)')).exec(timestr);
+        let tomorrowPattern = new RegExp("domani alle %s".replace('%s', '([\\d+|:]+)')).exec(timestr);
+        let yesterdayPattern = new RegExp("ieri alle %s".replace('%s', '([\\d+|:]+)')).exec(timestr);
+        let laterDatePattern = new RegExp(window.lang['0cb274c906d622fa8ce524bcfbb7552d'].replace('%1', '([\\d+|\\.]+)').replace('%2', '([\\d+|:]+)')).exec(timestr);
+        let t, date;
+
+        if (todayPattern !== null) {
+            t = todayPattern[1].split(':');
+            date = new Date(d[2], (d[1] - 1), d[0], t[0], t[1], t[2], (t[3] || 0));
+        } else if (tomorrowPattern !== null) {
+            t = tomorrowPattern[1].split(':');
+            date = new Date(d[2], (d[1] - 1), (d[0] + 1), t[0], t[1], t[2], (t[3] || 0));
+        } else if (yesterdayPattern !== null) {
+            t = yesterdayPattern[1].split(':');
+            date = new Date(d[2], (d[1] - 1), (d[0] - 1), t[0], t[1], t[2], (t[3] || 0));
+        } else {
+            d = (laterDatePattern[1] + d[2]).split('.').map(x => +x);
+            t = laterDatePattern[2].split(':');
+            date = new Date(d[2], (d[1] - 1), d[0], t[0], t[1], t[2], (t[3] || 0));
+        }
+
+        return date.getTime();
     };
-    
 
     String.prototype.toCoord = function (objectified) {
         let c = (this.match(/\d{1,3}\|\d{1,3}/g) || [false]).pop();
