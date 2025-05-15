@@ -790,7 +790,7 @@ window.FarmGod.Main = (function (Library, Translation) {
                         let [id, name, x, y, player_id] = villageData.split(',');
                         let coord = `${x}|${y}`;
 
-                        if (Number(player_id) === 0 && !data.farms.farms.hasOwnProperty(coord) && name !== 'Universiteitsdorp' && !name.includes('Bolwerk')) {
+                        if (Number(player_id) === 0 && !data.farms.farms.hasOwnProperty(coord) && name == 'Villaggio barbaro') {
                             data.farms.farms[coord] = {
                                 'id': id.toNumber()
                             }
